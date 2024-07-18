@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import { PORT } from "./config.js";
+// import { PORT } from "./config.js";
 import { User } from "./models/user.js";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -42,9 +42,9 @@ app.get('/users', async(req, res) => {
 
 mongoose.connect(process.env.MONGODB_URI).then(() => {
     console.log('App is connected to the database');
-    app.listen(PORT, () => {
-        console.log(`App is listening to port: ${PORT}`)
-    })
+    // app.listen(PORT, () => {
+    //     console.log(`App is listening to port: ${PORT}`)
+    // })
 }).catch((error) => {
     console.log(error)
 });
