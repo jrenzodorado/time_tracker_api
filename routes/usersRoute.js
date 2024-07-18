@@ -4,7 +4,11 @@ import { User } from '../models/user.js';
 
 const usersRouter = express.Router();
 
-// route to create a new user, modify to check if existing first
+/**
+ * route handler to create a new user, also checks if user is existing
+ * @param  {Object} req contains user data
+ * @return {JSON} res output of request
+ */
 usersRouter.post('/new', async (req, res) => {
     try {
         const { username } = req.body
@@ -26,7 +30,11 @@ usersRouter.post('/new', async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 });
-// retrieve users
+
+/**
+ * route handler to retrieve all users
+ * @return {JSON} res array of users
+ */
 usersRouter.get('/', async (req, res) => {
     try {
         const users = await User.find({});
@@ -40,7 +48,12 @@ usersRouter.get('/', async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 });
-// retrieve user
+
+/**
+ * route handler to retrieve user 
+ * @param  {String} username unique identifier of user
+ * @return {JSON} res object containing user information
+ */
 usersRouter.get('/:username', async (req, res) => {
     try {
         const { username } = req.params;
@@ -55,7 +68,12 @@ usersRouter.get('/:username', async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 });
-// update user
+
+/**
+ * route handler to update user
+ * @param  {String} id unique identifier of user
+ * @return {JSON} status output of request
+ */
 usersRouter.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -70,7 +88,12 @@ usersRouter.put('/:id', async (req, res) => {
         return res.status(500).send({ message: error.message })
     }
 });
-// delete user
+
+/**
+ * route handler to delete user
+ * @param  {String} id unique identifier of user
+ * @return {JSON} status output of request
+ */
 usersRouter.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

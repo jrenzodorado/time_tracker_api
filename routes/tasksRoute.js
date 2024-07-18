@@ -6,7 +6,11 @@ import { Task } from '../models/task.js';
 const tasksRouter = express.Router();
 const regexPattern = /^(\d+(?:\.\d+)?)\s*(?:hr|hrs)\s*#(\w+)\s*(.*)$/;
 
-// route to create a task with the current user
+/**
+ * route handler to create new task with current user
+ * @param  {Object} req contains check in task and user data
+ * @return {JSON} res output of request
+ */
 tasksRouter.post('/new', async (req, res) => {
     try {
         const { task, createdBy } = req.body
@@ -28,7 +32,14 @@ tasksRouter.post('/new', async (req, res) => {
     }
 });
 
-// retrieve tasks based on user by date range
+
+/**
+ * retrieve tasks based on user by date range e.g. Dec 1 - Dec 15
+ * @param  {String} userId foreign key owned by the creator of entry
+ * @param  {Date} date1 initial search date
+ * @param  {Date} date2 end search date
+ * @return {Array<Tasks>} Filtered Tasks by date range
+ */
 const getTasksByDateRange = async (userId, date1, date2) => {
     try {
         const endDate = new Date(date2);
@@ -51,7 +62,12 @@ const getTasksByDateRange = async (userId, date1, date2) => {
     }
 };
 
-// retrieve tasks based on user by tag
+/**
+ * retrieve tasks based on user by tag e.g. #<tag>
+ * @param  {String} userId foreign key owned by the creator of entry
+ * @param  {String} searchTag search string excluding hashtag
+ * @return {Array<Tasks>} Filtered Tasks by Tag
+ */
 const getTasksByTag = async (userId, searchTag) => {
     searchTag = '#' + searchTag
     try {
@@ -70,7 +86,14 @@ const getTasksByTag = async (userId, searchTag) => {
     }
 };
 
-// retrieve tasks based on user by date range and tag 
+/**
+ * retrieve tasks based on user by date range and tag 
+ * @param  {String} userId foreign key owned by the creator of entry
+ * @param  {Date} date1 initial search date
+ * @param  {Date} date2 end search date
+ * @param  {String} searchTag search string excluding hashtag
+ * @return {Array<Tasks>} Filtered Tasks by date range and tag
+ */
 const getTasksByTagAndDate = async (userId, date1, date2, searchTag) => {
     searchTag = '#' + searchTag
     try {
@@ -95,7 +118,11 @@ const getTasksByTagAndDate = async (userId, date1, date2, searchTag) => {
     }
 };
 
-// main task router function that handles filtering of data
+/**
+ * route handler that handles filtering of tasks
+ * @param  {Object} req contains query data
+ * @return {JSON} filtered tasks
+ */
 tasksRouter.get('/', async (req, res) => {
     const { userId, date1, date2, searchTag } = req.query
 
@@ -116,7 +143,11 @@ tasksRouter.get('/', async (req, res) => {
     }
 });
 
-// delete task
+/**
+ * route handler to delete task
+ * @param  {String} id task id
+ * @return {JSON} status output of request
+ */
 tasksRouter.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
