@@ -1,6 +1,5 @@
 import express from "express";
 import mongoose from "mongoose";
-// import { PORT } from "./config.js";
 import { User } from "./models/user.js";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -26,25 +25,25 @@ app.post('/user/new', async (req, res) => {
         res.status(500).send({ message: error.message })
     }
 })
-app.get('/users', async(req, res) => {
-    try{
+app.get('/users', async (req, res) => {
+    try {
         const users = await User.find({});
 
         return res.status(200).json({
             count: users.length,
             users: users
         });
-    }catch (error){
+    } catch (error) {
         console.log(error.message);
-        res.status(500).send({message: error.message})
+        res.status(500).send({ message: error.message })
     }
 })
 
 mongoose.connect(process.env.MONGODB_URI).then(() => {
     console.log('App is connected to the database');
-    // app.listen(PORT, () => {
-    //     console.log(`App is listening to port: ${PORT}`)
-    // })
+    app.listen((process.env.PORT || 4000), () => {
+        console.log(`App is listening to port`);
+    })
 }).catch((error) => {
     console.log(error)
 });
