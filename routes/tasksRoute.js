@@ -25,7 +25,7 @@ tasksRouter.post('/new', async (req, res) => {
             createdBy: createdBy
         }
         const taskItem = await Task.create(newTask)
-        return res.status(200).json({ message: 'Task entry successfully created' });
+        return res.status(200).json({ message: 'Task entry successfully created', taskItem: taskItem });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({ message: error.message })
