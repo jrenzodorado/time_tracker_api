@@ -1,17 +1,19 @@
 import express from 'express';
 import { User } from '../models/user.js';
-
-
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+dotenv.config();
 const usersRouter = express.Router();
 
 /**
  * route handler to create a new user, also checks if user is existing
- * @param  {Object} req contains user data
- * @return {JSON} res output of request
+ * @param  {Object} req contains user data username, role, password
+ * @return {JSON} res output of request, token
  */
-usersRouter.post('/new', async (req, res) => {
+usersRouter.post('/register', async (req, res) => {
     try {
-        const { username } = req.body
+        const { username, password } = req.body
         if (!username) {
             return res.status(400).json({ message: 'Missing required field username' })
         }
@@ -21,15 +23,65 @@ usersRouter.post('/new', async (req, res) => {
         }
         const newUser = {
             username: username,
-            role: 2
+            role: 2,
+            password: password
         }
         const user = await User.create(newUser)
-        return res.status(200).json({ message: `Successfully created user ${username}` });
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+        await user.save();
+        // , username: user.username, role: user.role
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.jwtSecret,
+            { expiresIn: 3600 },
+            (err, token) => {
+                if (err) throw err;
+                return res.status(200).json({ message: `Successfully created user ${username}`, token: token });
+            }
+        );
+
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({ message: error.message })
     }
 });
+
+/**
+ * route handler to login  user
+ * @param  {Object} req contains user data username, role, password
+ * @return {JSON} res output of request, token
+ */
+usersRouter.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        let user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ msg: 'Invalid credentials' });
+        }
+        // Validate password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ msg: 'Invalid credentials' });
+        }
+        // Generate JWT token
+        const payload = {
+            user: {
+                id: user.id
+            }
+        };
+
+        jwt.sign(payload, process.env.jwtSecret, { expiresIn: 3600 },
+            (err, token) => {
+                if (err) throw err;
+                return res.status(200).json({ message: 'Logged in', token: token });
+            });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+})
 
 /**
  * route handler to retrieve all users
