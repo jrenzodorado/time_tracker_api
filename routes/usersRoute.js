@@ -75,7 +75,7 @@ usersRouter.post('/login', async (req, res) => {
         jwt.sign(payload, process.env.jwtSecret, { expiresIn: 3600 },
             (err, token) => {
                 if (err) throw err;
-                return res.status(200).json({ message: 'Logged in', token: token });
+                return res.status(200).json({ message: 'Logged in', token: token, userId: user._id });
             });
     } catch (err) {
         console.error(err.message);
