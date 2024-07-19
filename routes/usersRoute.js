@@ -38,7 +38,7 @@ usersRouter.post('/register', async (req, res) => {
             { expiresIn: 3600 },
             (err, token) => {
                 if (err) throw err;
-                return res.status(200).json({ message: `Successfully created user ${username}`, token: token });
+                return res.status(200).json({ message: `Successfully created user ${username}`, token: token, userId: user._id });
             }
         );
 
