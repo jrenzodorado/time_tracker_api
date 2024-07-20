@@ -13,22 +13,31 @@ const regexPattern = /^(\d+(?:\.\d+)?)\s*(?:hr|hrs)\s*#(\w+)\s*(.*)$/;
  */
 tasksRouter.post('/new', async (req, res) => {
     try {
-        const { task, createdBy } = req.body
+        const { task, createdBy } = req.body;
         if (!task) {
-            return res.status(400).json({ message: 'Missing required field task' })
+            return res.status(400).json({ message: 'Missing required field task' });
         }
         if (!regexPattern.test(task)) {
             return res.status(400).json({ message: 'Task does not match required format' });
         }
+
+        // Get current time and adjust to GMT+8
+        const now = new Date();
+        const gmt8Offset = 8 * 60; // GMT+8 in minutes
+        const gmt8Time = new Date(now.getTime() + gmt8Offset * 60 * 1000);
+        const createdAt = gmt8Time.toISOString();
+
         const newTask = {
             task: task,
-            createdBy: createdBy
-        }
-        const taskItem = await Task.create(newTask)
+            createdBy: createdBy,
+            createdAt: createdAt // Add createdAt timestamp
+        };
+
+        const taskItem = await Task.create(newTask);
         return res.status(200).json({ message: 'Task entry successfully created', taskItem: taskItem });
     } catch (error) {
         console.log(error.message);
-        return res.status(500).json({ message: error.message })
+        return res.status(500).json({ message: error.message });
     }
 });
 
