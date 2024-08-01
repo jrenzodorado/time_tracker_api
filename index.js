@@ -7,10 +7,10 @@ import tasksRoute from './routes/tasksRoute.js'
 dotenv.config();
 
 const app = express();
-app.use(express.json());
-app.use(cors({
+app.use(express.json({
     origin: "https://time-tracker-wev9.onrender.com/"
 }));
+app.use(cors());
 app.use('/users', usersRoute);
 app.use('/tasks', tasksRoute);
 ;
